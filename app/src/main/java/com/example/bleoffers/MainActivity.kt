@@ -32,11 +32,6 @@ import com.google.android.material.snackbar.Snackbar
 import java.util.UUID
 import kotlin.system.exitProcess
 
-private const val RUNTIME_PERMISSION_REQUEST_CODE = 2
-private const val ESP32S_SERVICE_UUID = "83ebe3dc-c6cb-48e7-96a0-af96b78aa8e3"
-private const val OFFERS_CHARACTERISTIC_UUID = "f263c242-b2dc-4b84-b9d0-d2e6ccee3072"
-private const val GATT_MAX_MTU_SIZE = 517
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -55,6 +50,9 @@ class MainActivity : AppCompatActivity() {
                 else getString(R.string.btn_start_scan)
             }
         }
+
+    private var offerUrl: String? = null
+    private var codeOffer: String? = null
 
     // Obtiene una instancia del Adaptador Bluetooth físico
     private val bluetoothAdapter: BluetoothAdapter by lazy {
@@ -110,12 +108,30 @@ class MainActivity : AppCompatActivity() {
         initListAdapter()
     }
 
+    @SuppressLint("MissingPermission")
     private fun initListeners() = with(binding) {
         btnScan.setOnClickListener {
             if (isScanning) {
                 stopBleScan()
             } else {
                 startBleScan()
+            }
+        }
+
+        btnEnableDisable.setOnClickListener {
+            if (isBLEnabled) {
+                bluetoothAdapter.disable()
+                Toast.makeText(this@MainActivity, "Bluetooth OFF", Toast.LENGTH_SHORT).show()
+                binding.btnEnableDisable.text = getString(R.string.btn_turn_on_bl)
+                isBLEnabled = false
+            } else {
+                if (bluetoothAdapter.isEnabled) {
+                    Toast.makeText(this@MainActivity, "Bluetooth ON", Toast.LENGTH_SHORT).show()
+                    binding.btnEnableDisable.text = getString(R.string.btn_turn_off_bl)
+                    isBLEnabled = true
+                } else {
+                    showEnableBluetooth()
+                }
             }
         }
     }
@@ -219,7 +235,7 @@ class MainActivity : AppCompatActivity() {
                 Log.w("BluetoothGattCallback", "Discovered ${services.size} services for ${device.address}")
                 gatt.printGattTable()
 
-                readCharacteristic()
+                readOffer()
             }
         }
 
@@ -236,8 +252,26 @@ class MainActivity : AppCompatActivity() {
             with(characteristic) {
                 when (status) {
                     GATT_SUCCESS -> {
-                        Log.i("BluetoothGattCallback", "Read characteristic $uuid:\n${String(value)}")
-                        bluetoothGatt?.close()
+                        when(uuid) {
+                            UUID.fromString(OFFERS_CHARACTERISTIC_UUID) -> {
+                                offerUrl = String(value)
+                                Log.i("OFERTA",
+                                    "Read characteristic $uuid:\n OFERTA: $offerUrl"
+                                )
+                                // Llenar nuevo recycler por cada oferta encontrada
+                                readCodeOffer()
+                            }
+                            UUID.fromString(CODEOFF_CHARACTERISTIC_UUID) -> {
+                                codeOffer = String(value)
+                                Log.i("CODIGO",
+                                    "Read characteristic $uuid:\n CODIGO: $codeOffer"
+                                )
+                                openOffer()
+                            }
+                            else -> {}
+                        }
+                        // TODO: Close connection
+                        //bluetoothGatt?.close()
                     }
                     GATT_READ_NOT_PERMITTED -> {
                         Log.e("BluetoothGattCallback", "Read not permitted for $uuid!")
@@ -251,13 +285,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun readCharacteristic() {
+    private fun readOffer() {
         val esp32sServiceUUID = UUID.fromString(ESP32S_SERVICE_UUID)
         val offerUUID = UUID.fromString(OFFERS_CHARACTERISTIC_UUID)
         val offerChar = bluetoothGatt?.getService(esp32sServiceUUID)?.getCharacteristic(offerUUID)
         if (offerChar?.isReadable() == true) {
             bluetoothGatt?.readCharacteristic(offerChar)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun readCodeOffer() {
+        val esp32sServiceUUID = UUID.fromString(ESP32S_SERVICE_UUID)
+        val codeOfferUUID = UUID.fromString(CODEOFF_CHARACTERISTIC_UUID)
+        val codeOfferChar = bluetoothGatt?.getService(esp32sServiceUUID)?.getCharacteristic(codeOfferUUID)
+        if (codeOfferChar?.isReadable() == true) {
+            bluetoothGatt?.readCharacteristic(codeOfferChar)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun openOffer() {
+        val intent = Intent(this, OfferActivity::class.java).apply {
+            putExtra("urlOf", offerUrl)
+            putExtra("codeOf", codeOffer)
+        }
+        // TODO: Escribir en la ESP que se abre la oferta
+        bluetoothGatt?.let { gatt ->
+            gatt.close()
+            bluetoothGatt = null
+        }
+        finish()
+        startActivity(intent)
     }
 
     private fun BluetoothGatt.printGattTable() {
@@ -413,9 +472,16 @@ class MainActivity : AppCompatActivity() {
             .show()*/
     }
 
-
     private fun showAlertDialog (title: Int, message: Int) {
 
+    }
+
+    companion object {
+        private const val RUNTIME_PERMISSION_REQUEST_CODE = 2
+        private const val ESP32S_SERVICE_UUID = "83ebe3dc-c6cb-48e7-96a0-af96b78aa8e3"
+        private const val OFFERS_CHARACTERISTIC_UUID = "f263c242-b2dc-4b84-b9d0-d2e6ccee3072"
+        private const val CODEOFF_CHARACTERISTIC_UUID = "0fa38d0c-f0e5-46b3-b1cf-c2842584158b"
+        private const val GATT_MAX_MTU_SIZE = 517
     }
 
 }
