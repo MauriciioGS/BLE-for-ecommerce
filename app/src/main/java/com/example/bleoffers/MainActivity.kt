@@ -18,6 +18,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.os.ParcelUuid
 import android.util.Log
 import android.widget.Toast
@@ -25,6 +26,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bleoffers.databinding.ActivityMainBinding
+import com.example.bleoffers.model.OfferDevice
 import com.example.bleoffers.utils.PermissionRequester
 import com.example.bleoffers.utils.hasRequiredRuntimePermissions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -37,8 +39,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var bleDeviceAdapter: LeDeviceListAdapter
-    private var blScanResults = mutableListOf<ScanResult>()
-    private lateinit var currentDevice: ScanResult
+    private var blScanResults = mutableListOf<OfferDevice>()
+    private lateinit var currentDevice: OfferDevice
     private var bluetoothGatt : BluetoothGatt? = null
 
     private var isBLEnabled = false
@@ -140,13 +142,14 @@ class MainActivity : AppCompatActivity() {
     private fun initListAdapter() {
         bleDeviceAdapter = LeDeviceListAdapter(LeDeviceListAdapter.OnClickListener { deviceSelected ->
             currentDevice = deviceSelected
-            Toast.makeText(this, deviceSelected.device.name, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, deviceSelected.name, Toast.LENGTH_SHORT).show()
             if (isScanning) {
                 stopBleScan()
             }
-            with(deviceSelected.device) {
+            with(deviceSelected) {
                 Log.w("ScanResultAdapter", "Connecting to $address")
-                connectGatt(this@MainActivity, false, gattCallback)
+                val device = bluetoothAdapter.getRemoteDevice(deviceSelected.address)
+                device.connectGatt(this@MainActivity, false, gattCallback)
             }
         })
 
@@ -171,6 +174,12 @@ class MainActivity : AppCompatActivity() {
                     ParcelUuid.fromString(ESP32S_SERVICE_UUID)
                 ).build()
             )
+            val handler = Handler()
+            handler.postDelayed({
+                isScanning = false
+                stopBleScan()
+            }, SCAN_PERIOD)
+
             bleScanner.startScan(filter, scanSettings, scanCallback)
             isScanning = true
         }
@@ -187,15 +196,33 @@ class MainActivity : AppCompatActivity() {
     private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            val indexQuery = blScanResults.indexOfFirst { it.device.address == result.device.address }
+            val indexQuery = blScanResults.indexOfFirst { it.address == result.device.address }
             if (indexQuery != -1) { // El scan result ya existe en la lista, se actualiza
-                blScanResults[indexQuery] = result
+                val updateOfferDev = OfferDevice(
+                    name = result.device.name.toString(),
+                    address = if (!result.device.address.isNullOrBlank()) result.device.address
+                    else getString(R.string.txt_no_address),
+                    type = result.device.type,
+                    alias = if (Build.VERSION.SDK_INT >=30) result.device.alias ?: "No alias" else "No alias",
+                    null,
+                    null
+                )
+                blScanResults[indexQuery] = updateOfferDev
                 bleDeviceAdapter.notifyItemChanged(indexQuery)
             } else {
                 with(result.device) {
-                    if (!blScanResults.contains(result)){
+                    val tempOfferDev = OfferDevice(
+                        name = name.toString(),
+                        address = if (!address.isNullOrBlank()) address
+                        else getString(R.string.txt_no_address),
+                        type = type,
+                        alias = if (Build.VERSION.SDK_INT >=30) alias ?: "No alias" else "No alias",
+                        null,
+                        null
+                    )
+                    if (!blScanResults.contains(tempOfferDev)){
                         Log.i("ScanCallback", "Found BLE device! Name: ${name ?: "Unnamed"}, address: $address")
-                        blScanResults.add(result)
+                        blScanResults.add(tempOfferDev)
                     }
                 }
             }
@@ -347,10 +374,6 @@ class MainActivity : AppCompatActivity() {
         return properties and property != 0
     }
 
-    // Funcion de extensión para convertir de byteArray a String con formato hexadecimal
-    fun ByteArray.toHexString(): String =
-        joinToString(separator = " ", prefix = "0x") { String.format("%02X", it) }
-
     private fun Activity.requestRelevantRuntimePermissions() {
         if (hasRequiredRuntimePermissions()) { return }
         when {
@@ -472,11 +495,8 @@ class MainActivity : AppCompatActivity() {
             .show()*/
     }
 
-    private fun showAlertDialog (title: Int, message: Int) {
-
-    }
-
     companion object {
+        private const val SCAN_PERIOD: Long = 10000
         private const val RUNTIME_PERMISSION_REQUEST_CODE = 2
         private const val ESP32S_SERVICE_UUID = "83ebe3dc-c6cb-48e7-96a0-af96b78aa8e3"
         private const val OFFERS_CHARACTERISTIC_UUID = "f263c242-b2dc-4b84-b9d0-d2e6ccee3072"

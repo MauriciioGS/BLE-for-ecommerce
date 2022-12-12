@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">BLE Offers</string>
-    <string name="btn_stop_scan">Stop Scan</string>
-    <string name="btn_start_scan">Start Scan</string>
+    <string name="btn_stop_scan">Detener busqueda</string>
+    <string name="btn_start_scan">Encontrar ofertas</string>
+    <string name="btn_turn_on_bl">Encender</string>
+    <string name="btn_turn_off_bl">Apagar</string>
+
     <string name="no_permissions_title">Permisos rechazados</string>
     <string name="no_permissions_msg">Para utilizar la aplicación se requieren los permisos solicitados.
         Vuelve a abrir la aplicación o activa los permisos desde configuración</string>
@@ -16,8 +19,11 @@
     <string name="try_agrain_btn">Reintentar</string>
     <string name="exit_btn">Salir</string>
     <string name="ok_btn">Ok</string>
-    <string name="btn_turn_on_bl">turn on bluetooth</string>
-    <string name="btn_turn_off_bl">turn off bluetooth</string>
 
-    <string name="txt_name">Name: %1$s</string>
+    <string name="txt_no_name">No name</string>
+    <string name="txt_no_address">Unknown address</string>
+
+    <!-- Offer Activity -->
+    <string name="txt_offer">Tienes una oferta para el producto mostrado. A continuación, copia el siguiene código e ingrésalo en tu compra para obtener un descuento:</string>
+    <string name="txt_copied">Copiado!</string>
 </resources>

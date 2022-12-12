@@ -52,7 +52,7 @@ class OfferActivity : AppCompatActivity() {
 
     private fun initUI() {
         if (!offerUrl.isNullOrBlank() && !codeOffer.isNullOrBlank()) {
-            binding.tvTitle.text = "Tienes una oferta"
+            binding.tvTitle.text = getString(R.string.txt_offer)
             binding.chipCodeOf.text = codeOffer
             initWebView()
         }
@@ -61,21 +61,16 @@ class OfferActivity : AppCompatActivity() {
             val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("code", binding.chipCodeOf.text)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(this, "Copiado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.txt_copied), Toast.LENGTH_SHORT).show()
             true
         })
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
+        binding.webView.webChromeClient = object : WebChromeClient() { }
 
-        binding.webView.webChromeClient = object : WebChromeClient() {
-
-        }
-
-        binding.webView.webViewClient = object : WebViewClient() {
-
-        }
+        binding.webView.webViewClient = object : WebViewClient() { }
 
         binding.webView.settings.javaScriptEnabled = true
 

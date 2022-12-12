@@ -12,39 +12,64 @@
         android:id="@+id/linearLayoutCompat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:weightSum="8"
+        android:layout_marginBottom="6dp"
+        android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:layout_weight="2"
+            android:src="@drawable/beacon"/>
+
         <TextView
             android:id="@+id/tvDevice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="4"
             android:textStyle="bold"
+            android:textColor="@color/text"
             android:text="NO NAMED DEVICE" />
-        <TextView
+
+        <Button
+            android:id="@+id/btnSeeOffer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Ver oferta"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"/>
+        <!--<TextView
             android:id="@+id/tvAlias"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="NO ALIAS" />
+            android:textColor="@color/text"
+            tools:text="NO ALIAS" />
         <TextView
             android:id="@+id/tvAdress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="UNKNOWN ADRESS" />
+            android:textColor="@color/text"
+            tools:text="@string/txt_no_address" />
         <TextView
             android:id="@+id/tvType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Tipo" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/black"/>
+            android:textColor="@color/text"
+            tools:text="Tipo" />-->
 
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayoutCompat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

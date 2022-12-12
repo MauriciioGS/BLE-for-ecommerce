@@ -13,22 +13,28 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
+        android:background="@color/bgLight"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Nombre de la oferta"/>
+            android:justificationMode="inter_word"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:letterSpacing="0.05"
+            android:textSize="14sp"
+            android:textColor="@color/text"
+            tools:text="@string/txt_offer"/>
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipCodeOf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             tools:text="CODE OFFER"
             style="@style/Widget.MaterialComponents.Chip.Choice"/>
 
