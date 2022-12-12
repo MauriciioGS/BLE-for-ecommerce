@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">BLE Offers</string>
+    <string name="btn_stop_scan">Stop Scan</string>
+    <string name="btn_start_scan">Start Scan</string>
+    <string name="no_permissions_title">Permisos rechazados</string>
+    <string name="no_permissions_msg">Para utilizar la aplicación se requieren los permisos solicitados.
+        Vuelve a abrir la aplicación o activa los permisos desde configuración</string>
+    <string name="location_permissions_title">Permisos de ubicación requeridos</string>
+    <string name="location_permissions_msg">A partir de Android 6.0, el sistema
+        requiere que se otorguen permisos de ubicación a las aplicaciones que utilizan la tecnología
+        Bluetooth Low Energy (BLE)</string>
+    <string name="bluetooth_permissions_title">Permisos de Bluetooth requeridos</string>
+    <string name="bluetooth_permissions_msg">A partir de Android 12, el sistema requiere que se
+        otorguen permisos de acceso al adaptador Bluetooth para escanear dispositivos
+        Bluetooth Low Energy (BLE)</string>
+    <string name="try_agrain_btn">Reintentar</string>
+    <string name="exit_btn">Salir</string>
+    <string name="ok_btn">Ok</string>
+    <string name="btn_turn_on_bl">turn on bluetooth</string>
+    <string name="btn_turn_off_bl">turn off bluetooth</string>
+
+    <string name="txt_name">Name: %1$s</string>
+</resources>
