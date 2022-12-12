@@ -1,4 +1,4 @@
-# Final Project: BLE-for-ecommerce
+# Final Project: BLE For Ecommerce
 ### Temas Selectos de Ingeniería en Computación III: Internet de las Cosas
 
 #### About this project: 
