@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity() {
     private fun initListAdapter() {
         bleDeviceAdapter = LeDeviceListAdapter(LeDeviceListAdapter.OnClickListener { deviceSelected ->
             currentDevice = deviceSelected
-            Toast.makeText(this, deviceSelected.name, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.opening_offer, deviceSelected.name), Toast.LENGTH_SHORT).show()
             if (isScanning) {
                 stopBleScan()
             }
@@ -309,6 +309,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        override fun onCharacteristicWrite(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            status: Int
+        ) {
+            with(characteristic) {
+                when (status) {
+                    BluetoothGatt.GATT_SUCCESS -> {
+                        Log.i("BluetoothGattCallback", "Wrote to characteristic ${uuid} | value: ${value}")
+                    }
+                    BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH -> {
+                        Log.e("BluetoothGattCallback", "Write exceeded connection ATT MTU!")
+                    }
+                    BluetoothGatt.GATT_WRITE_NOT_PERMITTED -> {
+                        Log.e("BluetoothGattCallback", "Write not permitted for $uuid!")
+                    }
+                    else -> {
+                        Log.e("BluetoothGattCallback", "Characteristic write failed for $uuid, error: $status")
+                    }
+                }
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -337,11 +360,12 @@ class MainActivity : AppCompatActivity() {
             putExtra("urlOf", offerUrl)
             putExtra("codeOf", codeOffer)
         }
-        // TODO: Escribir en la ESP que se abre la oferta
+        // Finaliza la conexión
         bluetoothGatt?.let { gatt ->
             gatt.close()
             bluetoothGatt = null
         }
+        // Abre la nueva acividad con la oferta
         finish()
         startActivity(intent)
     }

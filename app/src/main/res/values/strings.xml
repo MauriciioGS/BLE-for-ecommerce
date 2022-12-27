@@ -4,6 +4,11 @@
     <string name="btn_start_scan">Encontrar ofertas</string>
     <string name="btn_turn_on_bl">Encender</string>
     <string name="btn_turn_off_bl">Apagar</string>
+    <string name="try_agrain_btn">Reintentar</string>
+    <string name="exit_btn">Salir</string>
+    <string name="ok_btn">Ok</string>
+    <string name="txt_no_name">No name</string>
+    <string name="txt_no_address">Unknown address</string>
 
     <string name="no_permissions_title">Permisos rechazados</string>
     <string name="no_permissions_msg">Para utilizar la aplicación se requieren los permisos solicitados.
@@ -16,12 +21,8 @@
     <string name="bluetooth_permissions_msg">A partir de Android 12, el sistema requiere que se
         otorguen permisos de acceso al adaptador Bluetooth para escanear dispositivos
         Bluetooth Low Energy (BLE)</string>
-    <string name="try_agrain_btn">Reintentar</string>
-    <string name="exit_btn">Salir</string>
-    <string name="ok_btn">Ok</string>
 
-    <string name="txt_no_name">No name</string>
-    <string name="txt_no_address">Unknown address</string>
+    <string name="opening_offer">Abriendo: %1$s</string>
 
     <!-- Offer Activity -->
     <string name="txt_offer">Tienes una oferta para el producto mostrado. A continuación, copia el siguiene código e ingrésalo en tu compra para obtener un descuento:</string>
